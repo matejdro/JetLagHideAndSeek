@@ -2,6 +2,7 @@ import { useStore } from "@nanostores/react";
 import { distance, point } from "@turf/turf";
 
 import { LatitudeLongitude } from "@/components/LatLngPicker";
+import { FriendlyNameInput } from "@/components/ui/display-name";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { defaultUnit } from "@/lib/context";
@@ -69,6 +70,7 @@ export const ThermometerQuestionComponent = ({
         <QuestionCard
             questionKey={questionKey}
             label={label}
+            friendlyName={data.friendlyName}
             sub={sub}
             className={className}
             collapsed={data.collapsed}
@@ -80,6 +82,15 @@ export const ThermometerQuestionComponent = ({
             hidden={data.hidden}
             setHidden={(hidden) => questionModified((data.hidden = hidden))}
         >
+            <FriendlyNameInput
+                defaultDisplayName={label}
+                data={data}
+                isLoading={$isLoading}
+                onChange={(newVal) => {
+                    data.friendlyName = newVal;
+                    questionModified(data);
+                }}
+            />
             <LatitudeLongitude
                 latitude={data.latA}
                 longitude={data.lngA}

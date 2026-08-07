@@ -42,7 +42,7 @@ type IconColor = z.infer<typeof iconColorSchema>;
 
 const randomColor = () =>
     (Object.keys(ICON_COLORS) as IconColor[])[
-        Math.floor(Math.random() * Object.keys(ICON_COLORS).length)
+    Math.floor(Math.random() * Object.keys(ICON_COLORS).length)
     ];
 
 const randomColorExcluding = (excluded: IconColor[] = []) => {
@@ -78,6 +78,7 @@ const thermometerQuestionSchema = z
         drag: z.boolean().default(true),
         collapsed: z.boolean().default(false),
         hidden: z.boolean().default(false),
+        friendlyName: z.string().optional(),
     })
     .transform((question) => {
         if (question.colorA === question.colorB) {
@@ -101,6 +102,7 @@ const ordinaryBaseQuestionSchema = z.object({
     color: iconColorSchema.default(randomColor),
     collapsed: z.boolean().default(false),
     hidden: z.boolean().default(false),
+    friendlyName: z.string().optional(),
 });
 
 const getDefaultUnit = () => {

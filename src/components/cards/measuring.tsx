@@ -7,6 +7,7 @@ import CustomInitDialog from "@/components/CustomInitDialog";
 import { LatitudeLongitude } from "@/components/LatLngPicker";
 import PresetsDialog from "@/components/PresetsDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FriendlyNameInput } from "@/components/ui/display-name";
 import { Select } from "@/components/ui/select";
 import {
     MENU_ITEM_CLASSNAME,
@@ -20,7 +21,6 @@ import {
     hiderMode,
     isLoading,
     questionModified,
-    questions,
     triggerLocalRefresh,
 } from "@/lib/context";
 import { cn } from "@/lib/utils";
@@ -50,19 +50,16 @@ export const MeasuringQuestionComponent = ({
 }) => {
     useStore(triggerLocalRefresh);
     const $hiderMode = useStore(hiderMode);
-    const $questions = useStore(questions);
     const $displayHidingZones = useStore(displayHidingZones);
     const $drawingQuestionKey = useStore(drawingQuestionKey);
     const $isLoading = useStore(isLoading);
     const $customInitPref = useStore(customInitPreference);
     const [customDialogOpen, setCustomDialogOpen] = React.useState(false);
-    const label = `Measuring
-    ${
-        $questions
-            .filter((q) => q.id === "measuring")
-            .map((q) => q.key)
-            .indexOf(questionKey) + 1
-    }`;
+
+    let label =
+        data.type === "custom-measure"
+            ? "Custom measuring"
+            : `Measuring: closer to ${data.type}?`;
 
     let questionSpecific = <></>;
 
@@ -192,6 +189,7 @@ export const MeasuringQuestionComponent = ({
         <QuestionCard
             questionKey={questionKey}
             label={label}
+            friendlyName={data.friendlyName}
             sub={sub}
             className={className}
             collapsed={data.collapsed}
@@ -231,6 +229,15 @@ export const MeasuringQuestionComponent = ({
                     data.type = "custom-measure";
                     questionModified();
                     setCustomDialogOpen(false);
+                }}
+            />
+            <FriendlyNameInput
+                defaultDisplayName={label}
+                data={data}
+                isLoading={$isLoading}
+                onChange={(newVal) => {
+                    data.friendlyName = newVal;
+                    questionModified(data);
                 }}
             />
             <SidebarMenuItem className={MENU_ITEM_CLASSNAME}>
@@ -314,6 +321,7 @@ export const MeasuringQuestionComponent = ({
                             }
                             data.type = value;
                             questionModified();
+                            label = "Custom measuring";
                             return;
                         }
                         if (value === "admin-measure" && !(data as any).cat) {
@@ -321,6 +329,7 @@ export const MeasuringQuestionComponent = ({
                         }
                         data.type = value;
                         questionModified();
+                        label = `Measuring: closer to ${data.type}?`;
                     }}
                     disabled={!data.drag || $isLoading}
                 />
